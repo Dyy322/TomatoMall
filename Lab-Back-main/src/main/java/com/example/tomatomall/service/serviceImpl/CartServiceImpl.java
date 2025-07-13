@@ -71,6 +71,14 @@ public class CartServiceImpl implements CartService {
     public void removeFromCart(Integer cartItemId) {
         // 获取当前登录用户ID
         Integer userId = securityUtil.getCurrentAccount().getId();
+
+        // 1. 检查购物车项是否存在且属于当前用户
+        Optional<Cart> cartOptional = cartRepository.findByCartItemIdAndUserId(cartItemId, userId);
+        if (!cartOptional.isPresent()) {
+            throw TomatoMallException.cartItemNotExists();
+        }
+
+        // 2. 删除购物车项
         cartRepository.deleteByCartItemId(cartItemId);
     }
 
